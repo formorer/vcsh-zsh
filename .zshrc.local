@@ -1,0 +1,67 @@
+alias svn-uscan="uscan --verbose --force-download --rename --repack --destdir=/home/formorer/vcs/svn/upstream/"
+alias bts="bts --mutt"
+alias git-uscan="uscan --verbose --force-download --rename --repack --destdir=/home/formorer/vcs/git/upstream/"
+export PATH=${PATH}:/home/formorer/android/platform-tools:~/android/tools:~/CodeSourcery/Sourcery_G++_Lite/bin/
+export MANPATH=:/home/formorer/packages/.collected/man
+
+function rmadison {(/usr/bin/rmadison -u bpo "$@"; /usr/bin/rmadison "$@")|sort}
+
+function hopen () { test -n "$1" || { echo "URL needed" ; return }; FILE=$1 ; MIME=$(curl --head $FILE | grep Content-Type | cut -d ' ' -f 2 | cut -d\; -f 1) ; curl $1 | see $MIME:- }
+
+alias svn-btc="svn-buildpackage --svn-builder=pdebuild --pbuilder cowbuilder --buildresult .. --auto-debsign --debsign-k formorer@debian.org --svn-lintian --svn-dont-clean"
+
+function gbts () { test -n "$1" || { echo "issue needed" ; return }; ISSUE="$1"; sensible-browser http://bts.grml.org/grml/issue${ISSUE} }
+
+function dwimcat () { for file in $@ ; if zcat --test $file >/dev/null 2>/dev/null ; then zcat $file ; else cat $file ; fi }; 
+
+function ssha (
+local SSH_AUTH_SOCK
+local SSH_AGENT_PID
+eval `ssh-agent`
+ssh-add -c
+ssh -o ControlPath=none -A "$@"
+kill $SSH_AGENT_PID
+)
+
+function dial () {
+	if [ -z "$1" ]
+	then
+		echo "Number needed"
+		return
+	fi
+	NUM=$( echo $1 | perl -p -e 's/(\s+)|[^0-9+]//g' | perl -p -e 's/\+/00/')
+	echo $NUM
+	curl "http://172.26.14.96//command.htm?number=$NUM"
+}
+
+export DEBEMAIL=formorer@debian.org
+export EMAIL=formorer@debian.org
+export DEBFULLNAME="Alexander Wirt"
+export NAME="Alexander Wirt"
+
+
+alias svn-bc="svn-buildpackage --svn-builder='pdebuild --pbuilder cowbuilder --buildresult ..' --svn-ignore --svn-lintian --svn-dont-clean"
+
+zstyle ':chpwd:profiles:/home/formorer/svn/osf(|/|/*)'       profile credativ
+zstyle ':chpwd:profiles:/home/formorer/git/credativ(|/|/*)'       profile credativ
+
+
+chpwd_profile_credativ()
+{
+  [[ ${profile} == ${CHPWD_PROFILE} ]] && return 1
+  print "chpwd(): Switching to profile: $profile"
+
+  export DEBEMAIL=alexander.wirt@credativ.de
+  export GIT_AUTHOR_EMAIL="alexander.wirt@credativ.de"
+  export GIT_COMMITTER_EMAIL="alexander.wirt@credativ.de"
+}
+
+
+source /usr/share/git-flow/git-flow-completion.zsh
+
+function irc() {  mosh ruprecht.snow-crash.org -- tmux attach-session; }
+export CVS_RSH=ssh
+
+dquilt() { quilt --quiltrc=${HOME}/.quiltrc-dpkg "$@"; }  
+compdef dquilt=quilt
+#zstyle :prompt:grml(|-large|-chroot):*:items:user pre %F{red}
