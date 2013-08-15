@@ -65,3 +65,4 @@ export CVS_RSH=ssh
 dquilt() { quilt --quiltrc=${HOME}/.quiltrc-dpkg "$@"; }  
 compdef dquilt=quilt
 #zstyle :prompt:grml(|-large|-chroot):*:items:user pre %F{red}
+# Dies ist ein Kommentat
